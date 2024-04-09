@@ -28,6 +28,7 @@ class ADB2CEmbedWebView extends StatefulWidget {
   final Widget? loadingReplacement;
   final Color webViewBackgroundColor;
   final String? userAgent;
+  final Function(NavigationRequest)? navigationRequest;
 
   const ADB2CEmbedWebView({
     super.key,
@@ -50,6 +51,7 @@ class ADB2CEmbedWebView extends StatefulWidget {
     this.loadingReplacement,
     this.webViewBackgroundColor = const Color(0x00000000),
     this.userAgent,
+    this.navigationRequest,
 
     // Optionals with default value
     this.responseType = Constants.defaultResponseType,
@@ -89,6 +91,13 @@ class ADB2CEmbedWebViewState extends State<ADB2CEmbedWebView> {
       ..setUserAgent(widget.userAgent)
       ..setNavigationDelegate(
         NavigationDelegate(
+          onNavigationRequest: (request) async {
+            if (widget.navigationRequest != null) {
+              return widget.navigationRequest!(request);
+            } else {
+              return NavigationDecision.navigate;
+            }
+          },
           onProgress: (int progress) {
             // Update loading bar.
           },
