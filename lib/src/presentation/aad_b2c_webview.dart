@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:pkce/pkce.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
+
 import '../constants.dart';
 
 /// A widget that embeds the Azure AD B2C web view for authentication purposes.
@@ -16,6 +17,7 @@ class ADB2CEmbedWebView extends StatefulWidget {
   final String userFlowName;
   final Function(BuildContext context)? onRedirect;
   final Function(BuildContext context)? onErrorOrCancel;
+  final Function(String customUrl)? customUrlRedirect;
   final ValueChanged<Token> onAccessToken;
   final ValueChanged<Token> onIDToken;
   final ValueChanged<Token> onRefreshToken;
@@ -43,6 +45,7 @@ class ADB2CEmbedWebView extends StatefulWidget {
     // Optionals
     this.onRedirect,
     this.onErrorOrCancel,
+    this.customUrlRedirect,
     this.onAnyTokenRetrieved,
     this.loadingReplacement,
     this.webViewBackgroundColor = const Color(0x00000000),
@@ -91,6 +94,9 @@ class ADB2CEmbedWebViewState extends State<ADB2CEmbedWebView> {
           },
           onPageStarted: (String url) {},
           onUrlChange: (change) {
+            if (widget.customUrlRedirect != null) {
+              widget.customUrlRedirect!(change.url!);
+            }
             final Uri response = Uri.dataFromString(change.url!);
             onPageFinishedTasks(change.url!, response);
           },
